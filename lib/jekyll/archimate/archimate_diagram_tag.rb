@@ -1,5 +1,12 @@
 module Jekyll
   module Archimate
+    # Insert a diagram from the ArchiMate model.
+    #
+    # @param id [String] id of the diagram in the ArchiMate model
+    # @param caption [String] caption for the diagram
+    #
+    #   {% archimate_diagram id-4623784 Gumball Manufacturing Business Process %}
+    #
     class ArchimateDiagramTag < ::Liquid::Tag
       def initialize(tag_name, args_text, tokens)
         super
@@ -9,15 +16,11 @@ module Jekyll
         @caption = args.join(" ")
       end
 
-      # Lookup allows access to the page/post variables through the tag context
-      def lookup(context, name)
-        lookup = context
-        name.split(".").each { |value| lookup = lookup[value] }
-        lookup
-      end
-
       def render(context)
-        baseurl = lookup(context, 'site.baseurl').to_s
+        baseurl = context.registers[:site].baseurl
+        # TODO: make the archimate_dir configurable in _config.yml and as an
+        #       optional argument in the tag.
+        archimate_dir = [baseurl, "archimate", "svg"].join("/")
         <<~END
           <figure id="#{@diagram_id}">
           <a href="#{baseurl}/archimate/svg/#{@diagram_id}.svg" alt="View Full Screen">
@@ -38,4 +41,4 @@ module Jekyll
   end
 end
 
-Liquid::Template.register_tag('archimate_diagram', Jekyll::Archimate::ArchimateDiagramTag)
+Liquid::Template.register_tag("archimate_diagram", Jekyll::Archimate::ArchimateDiagramTag)

@@ -29,7 +29,7 @@ module Jekyll
           return @@cache[file_path][:model]
         end
 
-        model = Archimate.read(file_path)
+        model = ::Archimate.read(file_path)
         File.open(cache_file, "wb") { |f| Marshal.dump(model, f) }
         @@cache[file_path] = {
           cache_time: File.mtime(cache_file),
