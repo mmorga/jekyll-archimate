@@ -162,7 +162,7 @@ module Jekyll
 
       def write(diagram)
         File.open(@filename, "wb") do |svg_file|
-          svg_file.write(Archimate::Svg::Diagram.new(diagram).to_svg)
+          svg_file.write(::Archimate::Svg::Diagram.new(diagram).to_svg)
         end
       end
     end
