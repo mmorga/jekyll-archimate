@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require "archimate"
+require "yaml"
 
 module Jekyll
   module Archimate
@@ -186,6 +187,7 @@ module Jekyll
       def generate
         export_svgs
         export_unified_json
+        export_catalogs
       end
 
       def export_unified_json
@@ -210,6 +212,40 @@ module Jekyll
         model.diagrams.each do |diagram|
           SvgFile.new(File.join(svg_dest_dir, "#{diagram.id}.svg")).write(diagram)
         end
+      end
+
+      def export_catalogs
+        data = File.join(site.source, "_data")
+        Dir.mkdir(data) unless Dir.exist?(data)
+        archimate = File.join(data, "archimate")
+        Dir.mkdir(archimate) unless Dir.exist?(archimate)
+        catalog = File.join(archimate, "catalog.yml")
+        File.open(catalog, "wb") do |file|
+          file.write(
+            model
+              .elements
+              .chunk { |el| el.type }
+              .each_with_object({}) { |(type, els), hash|
+                hash[type] = els.map { |el| catalog_element(el) }
+              }
+              .to_yaml
+          )
+        end
+      end
+
+      def catalog_element(el)
+        [:id, :name, :documentation, :type, :properties].each_with_object({}) do |sym, hash|
+          hash[sym] = el.send(sym)
+        end
+        {
+          "id" => el.id,
+          "name" => el.name.to_s,
+          "documentation" => el.documentation.first.to_s,
+          "type" => el.type,
+          "properties" => el.properties.each_with_object({}) do |property, hash|
+            hash[property.key.to_s] = property.value.to_s
+          end
+        }
       end
     end
   end
