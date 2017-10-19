@@ -6,15 +6,17 @@ module Jekyll
   module Archimate
     # Removes all keys that have null or empty values
     def self.hash_purge(hash)
-      hash.delete_if { |_, value| !value || value.empty? }
+      hash.delete_if { |_, value| !value || (value.is_a?(String) && value.empty?) }
     end
 
     # Base class for ArchiMate Entities: Model, Diagram, Element, Relationship
     class EntityBase
       attr_reader :entity
+      attr_reader :model
 
-      def initialize(entity)
+      def initialize(entity, model: nil)
         @entity = entity
+        @model = model
       end
 
       def to_h
@@ -25,7 +27,7 @@ module Jekyll
         {
           id: entity.id,
           name: entity.name,
-          documentation: entity.documentation.map(&:to_h),
+          documentation: entity.documentation&.to_h,
           properties: entity.properties.map(&:to_h)
         }
       end
@@ -46,8 +48,8 @@ module Jekyll
         super.merge(
           type: "Element",
           element_type: entity.type,
-          relationships: entity.relationships.map(&:id),
-          views: entity.diagrams.map(&:id)
+          relationships: model.relationships.select { |rel| rel.source&.id == entity.id || rel.target&.id == entity.id }.map(&:id),
+          views: model.diagrams.select { |dia| dia.element_ids.include?(entity.id) }.map(&:id)
         )
       end
     end
@@ -58,9 +60,9 @@ module Jekyll
         super.merge(
           type: "Relationship",
           relationship_type: entity.type,
-          source: entity.source,
-          target: entity.target,
-          views: entity.diagrams.map(&:id)
+          source: entity.source&.id,
+          target: entity.target&.id,
+          views: model.diagrams.select { |dia| dia.relationship_ids.include?(entity.id) }.map(&:id)
         )
       end
     end
@@ -96,7 +98,7 @@ module Jekyll
       def to_h
         Archimate.hash_purge(
           id: folder.id,
-          name: folder.name,
+          name: folder.name.to_s,
           folders: folder.organizations.map { |child| Folder.new(child).to_h },
           diagrams: items
         )
@@ -119,11 +121,11 @@ module Jekyll
       end
 
       def elements
-        model.elements.map { |element| ElementEntity.new(element).to_h }
+        model.elements.map { |element| ElementEntity.new(element, model: model).to_h }
       end
 
       def relationships
-        model.relationships.map { |relationship| RelationshipEntity.new(relationship).to_h }
+        model.relationships.map { |relationship| RelationshipEntity.new(relationship, model: model).to_h }
       end
 
       def diagrams
@@ -240,7 +242,7 @@ module Jekyll
         {
           "id" => el.id,
           "name" => el.name.to_s,
-          "documentation" => el.documentation.first.to_s,
+          "documentation" => el.documentation&.to_s,
           "type" => el.type,
           "properties" => el.properties.each_with_object({}) do |property, hash|
             hash[property.key.to_s] = property.value.to_s
