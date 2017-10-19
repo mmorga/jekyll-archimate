@@ -22,11 +22,16 @@ module Jekyll
 
         cache_file = marshal_cache_file(file_path)
         if File.exist?(cache_file) && File.mtime(cache_file) >= mod_time
-          @@cache[file_path] = {
-            cache_time: File.mtime(cache_file),
-            model: File.open(cache_file, "rb") { |f| Marshal.load(f) }
-          }
-          return @@cache[file_path][:model]
+          begin
+            @@cache[file_path] = {
+              cache_time: File.mtime(cache_file),
+              model: File.open(cache_file, "rb") { |f| Marshal.load(f) }
+            }
+            return @@cache[file_path][:model]
+        rescue ArgumentError
+          puts "Cache file is invalid - removing cache #{cache_file} and loading #{file_path}"
+          FileUtils.rm cache_file
+        end
         end
 
         model = ::Archimate.read(file_path)
