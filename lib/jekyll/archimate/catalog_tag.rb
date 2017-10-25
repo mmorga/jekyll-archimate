@@ -52,7 +52,7 @@ module Jekyll
           <<-END
           <tr>
             <td><span class="badge badge-primary">#{element["type"]}</span> #{element["name"]}</td>
-            <td>#{element["documentation"]}</td>
+            <td>#{@converter.convert(element["documentation"]).gsub(/<\/?p[^>]*>/, '').chomp if element["documentation"]}</td>
             <td>#{render_properties(element["properties"])}</td>
           </tr>
           END
@@ -76,7 +76,9 @@ module Jekyll
         markup.scan(Liquid::TagAttributes) do |key, value|
           attributes[key] = value
         end
-        @caption = attributes['caption']&.gsub!(/\A"|"\Z/, '')
+
+        caption = attributes['caption']&.gsub!(/\A"|"\Z/, '')
+        @caption = @converter.convert(caption).gsub(/<\/?p[^>]*>/, '').chomp if @caption
         element_type = attributes['type']
         element_type = element_type.gsub!(/\A"|"\Z/, '') if element_type
         @element_types = element_type.split(",").map(&:strip)

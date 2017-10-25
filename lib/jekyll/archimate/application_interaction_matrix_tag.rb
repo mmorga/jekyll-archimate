@@ -2,20 +2,20 @@ module Jekyll
   module Archimate
     # Insert a diagram from the ArchiMate model.
     #
-    #   {% matrix plateau:"Today" | caption: "Today's Application Interaction" }
+    #   {% application_interaction_matrix plateau:"Today" | caption: "Today's Application Interaction" }
     #
-    class MatrixTag < Liquid::Tag
+    class ApplicationInteractionMatrixTag < Liquid::Tag
       attr_reader :context
-      attr_reader :caption
-      attr_reader :element_types
       attr_reader :markup
+      attr_reader :caption
+      attr_reader :plateau
 
 
       def initialize(tag_name, markup, tokens)
         @markup = markup
         @context = nil
         @caption = nil
-        @plateau = []
+        @plateau = nil
         super
       end
 
@@ -39,7 +39,7 @@ module Jekyll
 
         relationship_filter = lambda { |rel| rel.weight >= ::Archimate::DataModel::Serving::WEIGHT }
 
-        plateau_today = dr_engine.element_by_name("Today")
+        plateau_today = dr_engine.element_by_name(plateau)
         today_rels = model.relationships.select do |rel|
           rel.source.id == plateau_today.id &&
             %w{CompositionRelationship AggregationRelationship}.include?(rel.type) &&
@@ -127,8 +127,6 @@ module Jekyll
       end
 
       def scan_attributes(context)
-        @converter = converter(context)
-
         # Render any liquid variables
         markup = Liquid::Template.parse(@markup).render(context)
 
@@ -138,15 +136,7 @@ module Jekyll
           attributes[key] = value
         end
         @caption = attributes['caption']&.gsub!(/\A"|"\Z/, '')
-        element_type = attributes['type']
-        element_type = element_type.gsub!(/\A"|"\Z/, '') if element_type
-        @element_types = element_type.split(",").map(&:strip)
-      end
-
-      def converter(context)
-        # Gather settings
-        site = context.registers[:site]
-        site.find_converter_instance(::Jekyll::Converters::Markdown)
+        @plateau = attributes['plateau']&.gsub!(/\A"|"\Z/, '')
       end
 
       def site
@@ -156,5 +146,5 @@ module Jekyll
   end
 end
 
-Liquid::Template.register_tag("matrix", Jekyll::Archimate::MatrixTag)
+Liquid::Template.register_tag("application_interaction_matrix", Jekyll::Archimate::ApplicationInteractionMatrixTag)
 
