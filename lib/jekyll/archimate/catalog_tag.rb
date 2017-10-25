@@ -4,7 +4,7 @@ module Jekyll
     #
     #   {% element_catalog type:"Principle" | caption:"Principles Catalog"  %}
     #
-    class ElementCatalogTag < Liquid::Tag
+    class CatalogTag < Liquid::Tag
       attr_reader :context
       attr_reader :caption
       attr_reader :element_types
@@ -95,5 +95,5 @@ module Jekyll
   end
 end
 
-Liquid::Template.register_tag("element_catalog", Jekyll::Archimate::ElementCatalogTag)
+Liquid::Template.register_tag("catalog", Jekyll::Archimate::CatalogTag)
 

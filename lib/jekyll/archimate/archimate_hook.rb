@@ -184,6 +184,7 @@ module Jekyll
         @archimate_file = archimate_file
         @clean_generated_dirs = @site.config.fetch('clean', false)
         @model = ArchimateCache.load_model(archimate_file.sub(site.source, ""))
+        @site.data["archimate_model"] = @model
       end
 
       def generate
@@ -253,7 +254,7 @@ module Jekyll
   end
 end
 
-Jekyll::Hooks.register :site, :after_init do |site|
+Jekyll::Hooks.register :site, :pre_render do |site|
   Jekyll.logger.info "ArchiMate Generator..."
   Dir.glob("#{site.source}/**/*.archimate").each do |archimate_file|
     unless archimate_file.start_with?(site.dest) || archimate_file.sub(site.source, "").start_with?("/_")
