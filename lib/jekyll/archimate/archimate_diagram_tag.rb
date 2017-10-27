@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Jekyll
   module Archimate
     # Insert a diagram from the ArchiMate model.
@@ -21,12 +23,12 @@ module Jekyll
         # TODO: make the archimate_dir configurable in _config.yml and as an
         #       optional argument in the tag.
         archimate_dir = [baseurl, "archimate", "svg"].join("/")
-        <<~END
+        <<~FIGURE
           <figure id="#{@diagram_id}">
-          <a href="#{baseurl}/archimate/svg/#{@diagram_id}.svg" alt="View Full Screen">
+          <a href="#{archimate_dir}/#{@diagram_id}.svg" alt="View Full Screen">
           <span class="glyphicon glyphicon-fullscreen" style="float:right"></span>
           </a>
-          <img src="#{baseurl}/archimate/svg/#{@diagram_id}.svg" class="img-responsive" alt="#{@caption}">
+          <img src="#{archimate_dir}/#{@diagram_id}.svg" class="img-responsive" alt="#{@caption}">
           <figcaption>
           #{@caption}
           <br/>
@@ -35,7 +37,7 @@ module Jekyll
           </a>
           </figcaption>
           </figure>
-        END
+        FIGURE
       end
     end
   end
