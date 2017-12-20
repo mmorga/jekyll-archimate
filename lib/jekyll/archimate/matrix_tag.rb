@@ -78,8 +78,6 @@ module Jekyll
       end
 
       def scan_attributes(context)
-        @converter = converter(context)
-
         # Render any liquid variables
         markup = Liquid::Template.parse(@markup).render(context)
 
@@ -92,12 +90,6 @@ module Jekyll
         element_type = attributes['type']
         element_type = element_type.gsub!(/\A"|"\Z/, '') if element_type
         @element_types = element_type.split(",").map(&:strip)
-      end
-
-      def converter(context)
-        # Gather settings
-        site = context.registers[:site]
-        site.find_converter_instance(::Jekyll::Converters::Markdown)
       end
 
       def site

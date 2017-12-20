@@ -13,7 +13,9 @@ module Jekyll
 end
 
 require "jekyll/archimate/version"
+require "jekyll/archimate/markup_converter"
 require "jekyll/archimate/archimate_cache"
+require "jekyll/archimate/tag_attribute_parser"
 require "jekyll/archimate/archimate_diagram_tag"
 require "jekyll/archimate/catalog_tag"
 require "jekyll/archimate/application_interaction_matrix_tag"

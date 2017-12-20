@@ -32,6 +32,7 @@ module Jekyll
       def write(content)
         return unless needs_write?(content)
         Jekyll.logger.info "Rendering #{relative_path}"
+        write_file(content)
       end
 
       private
