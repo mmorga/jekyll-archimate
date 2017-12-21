@@ -13,6 +13,7 @@ module Jekyll
       end
 
       def cache_valid?(archimate_file)
+        return false unless archimate_file
         path = archimate_file.path
         @cache.key?(path) &&
           @cache[path].archimate_file.modified_time.to_i == archimate_file.modified_time.to_i
@@ -30,7 +31,7 @@ module Jekyll
       end
 
       def default_archimate_file=(archimate_file)
-        unless archimate_file && @cache.key?(archimate_file.path)
+        unless !archimate_file || @cache.key?(archimate_file.path)
           raise(
             "Default ArchiMate file does not exist in cache: #{archimate_file.relative_path}"
           )
