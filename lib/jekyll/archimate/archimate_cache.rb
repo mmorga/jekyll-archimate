@@ -30,7 +30,7 @@ module Jekyll
       end
 
       def default_archimate_file=(archimate_file)
-        unless @cache.key?(archimate_file.path)
+        unless archimate_file && @cache.key?(archimate_file.path)
           raise(
             "Default ArchiMate file does not exist in cache: #{archimate_file.relative_path}"
           )
