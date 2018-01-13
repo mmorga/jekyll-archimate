@@ -19,7 +19,10 @@ module Jekyll
       end
 
       def render(context)
-        baseurl = context.registers[:site].baseurl
+        page = context.registers[:page]
+        page_dir = File.dirname(page["path"])
+        rel_archimate_dir = File.join(page_dir, "archimate")
+        baseurl = Dir.exist?(rel_archimate_dir) ? File.dirname(page["url"]) : context.registers[:site].baseurl
         # TODO: make the archimate_dir configurable in _config.yml and as an
         #       optional argument in the tag.
         archimate_dir = [baseurl, "archimate", "svg"].join("/")
