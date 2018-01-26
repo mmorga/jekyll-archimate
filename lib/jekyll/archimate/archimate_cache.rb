@@ -26,6 +26,31 @@ module Jekyll
         @cache[archimate_file.path].model
       end
 
+      def for_context(context)
+        page = context.registers[:page]
+        page_dir = File.dirname(page["path"])
+        files = archimate_files(context.registers[:site])
+        archimate_file(files, page_dir)
+      end
+
+      def archimate_file(files, page_dir)
+        return nil if page_dir.empty?
+        rel_archimate_dir = File.join(page_dir, "archimate")
+        found = files.find { |file| file.relative_path.start_with?(rel_archimate_dir.sub(/^\./, "")) }
+        return nil if !found && page_dir == "."
+        return archimate_file(files, File.split(page_dir)[0]) unless found
+        model(found)
+      end
+
+      def archimate_files(site)
+        @archimate_files ||= site
+                             .collections
+                             .values
+                             .flat_map(&:files)
+                             .concat(site.static_files)
+                             .select { |static_file| static_file.extname =~ /\.(archimate|xml)$/ }
+      end
+
       def cache_infos
         cache.values
       end

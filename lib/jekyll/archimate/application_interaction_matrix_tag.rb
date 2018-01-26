@@ -37,12 +37,12 @@ module Jekyll
       # target_selector: Element selector for target elements
       # relationship_selector
       def application_interaction
-        model = ArchimateCache.instance.model
+        model = ArchimateCache.instance.for_context(context)
         dr_engine = ::Archimate::DerivedRelations.new(model)
 
         relationship_filter = ->(rel) { rel.weight >= ::Archimate::DataModel::Serving::WEIGHT }
 
-        plateau_today = dr_engine.element_by_name(plateau)
+        plateau_today = model.elements.find(&::Archimate::DataModel.by_name(plateau))
         today_rels = model.relationships.select do |rel|
           rel.source.id == plateau_today.id &&
             %w[CompositionRelationship AggregationRelationship].include?(rel.type) &&

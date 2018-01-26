@@ -25,7 +25,7 @@ module Jekyll
 
       def render(context)
         @context = context
-        @model = ArchimateCache.instance.model
+        @model = ArchimateCache.instance.for_context(context)
         scan_attributes(context)
         render_table
       end
