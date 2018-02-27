@@ -2,7 +2,7 @@
 
 module Jekyll
   module Archimate
-    ArchimateFileCacheInfo = Struct.new(:archimate_file, :model, :needs_generation)
+    ArchimateFileCacheInfo = Struct.new(:archimate_file, :model, :needs_generation, :updated)
 
     class ArchimateCache
       include Singleton
@@ -17,7 +17,7 @@ module Jekyll
         return false unless archimate_file
         path = archimate_file.path
         @cache.key?(path) &&
-          @cache[path].archimate_file.modified_time.to_i == archimate_file.modified_time.to_i
+          @cache[path].updated == File.mtime(archimate_file.path)
       end
 
       def model(archimate_file)
@@ -62,9 +62,10 @@ module Jekyll
         model = ::Archimate.read(path)
         load_finish_time = Time.new
         Jekyll.logger.info format("  %.1f seconds", (load_finish_time - load_start_time))
-        cache_file_info = cache.fetch(path, ArchimateFileCacheInfo.new(archimate_file, model, :maybe))
+        cache_file_info = cache.fetch(path, ArchimateFileCacheInfo.new(archimate_file, model, :maybe, 0))
         cache_file_info.archimate_file = archimate_file
         cache_file_info.model = model
+        cache_file_info.updated = archimate_file.modified_time
         @cache[path] = cache_file_info
       end
     end
