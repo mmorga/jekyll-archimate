@@ -1,5 +1,6 @@
-# coding: utf-8
-lib = File.expand_path("../lib", __FILE__)
+# frozen_string_literal: true
+
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "jekyll/archimate/version"
 
@@ -9,9 +10,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Mark Morga"]
   spec.email         = ["markmorga@gmail.com"]
 
-  spec.summary       = %q{Jekyll plugins to support documenting ArchiMate models.}
-  spec.description   = %q{Produces SVG diagrams and a JSON index useful for
-                          search from an ArchiMate model file.}
+  spec.summary       = 'Jekyll plugins to support documenting ArchiMate models.'
+  spec.description   = 'Produces SVG diagrams and a JSON index useful for
+                          search from an ArchiMate model file.'
   spec.homepage      = "https://github.com/mmorga/jekyll-archimate"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
@@ -21,10 +22,10 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "archimate", ">= 2.1"
   spec.add_runtime_dependency "jekyll", "~> 3.0"
-  spec.add_runtime_dependency "archimate", ">= 2.0"
 
   spec.add_development_dependency "bundler", "~> 1.15"
-  spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "rake", "~> 12.3"
 end

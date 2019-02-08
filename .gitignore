@@ -1,6 +1,5 @@
 /.bundle/
 /.yardoc
-/Gemfile.lock
 /_yardoc/
 /coverage/
 /doc/
@@ -9,3 +8,6 @@
 /tmp/
 *.sublime*
 docs/
+.DS_Store
+.awcache
+node_modules/

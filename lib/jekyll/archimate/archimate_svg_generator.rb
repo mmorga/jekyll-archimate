@@ -16,6 +16,7 @@ module Jekyll
         load_start_time = Time.new
         create_svg_source_path_if_needed
         return unless needs_generation?
+
         load_finish_time = Time.new
         Jekyll.logger.info format("   %.1f seconds", (load_finish_time - load_start_time))
         model.diagrams.each do |diagram|
@@ -65,7 +66,7 @@ module Jekyll
           svg_relative_path,
           svg_filename(diagram),
           archimate_file
-        ).write(::Archimate::Svg::Diagram.new(diagram).to_svg)
+        ).write(::Archimate::Svg::Diagram.new(diagram, legend: true).to_svg)
       end
     end
   end
